@@ -1,0 +1,118 @@
+ONEDAYS 프로젝트
+
+데이터베이스
+
+/*
+아이디 planner 
+비밀번호 20200824
+*/
+
+
+< 유열 테이블 > 
+CREATE TABLE PICTURE (
+    PIC_NO NUMBER NOT NULL , -- 글번호 
+    BCA_NO INT NOT NULL, -- 게시판 카테고리 - 4. 사진
+    ID VARCHAR2(20) NOT NULL, -- 아이디 
+    PIC_TITLE VARCHAR2(100) , -- 사진 제목
+    PIC_CONTENT VARCHAR2(300) ,-- 사진 내용 
+    PIC_DATE DATE not null ,--날짜
+    PIC_PATH VARCHAR2(300) --사진주소
+);
+
+ALTER TABLE PICTURE 
+    ADD CONSTRAINT PK_PIC_NO
+    PRIMARY KEY(
+        PIC_NO
+    );
+    
+
+ALTER TABLE PICTURE 
+    ADD CONSTRAINT FK_PIC_BCA_NO
+    FOREIGN KEY(
+        BCA_NO 
+    ) 
+    REFERENCES BOARDCATE(
+        BCA_NO
+    );
+
+    
+CREATE INDEX PIC_TITLE 
+    ON PICTURE(
+        PIC_TITLE ASC
+    );
+
+
+CREATE TABLE BOARDCATE(
+    BCA_NO INT NOT NULL, -- 카테고리 PK
+    BCA_CATEGORY VARCHAR2(20) -- 카테고리 명(공지사항, 이벤트, 질문&답변, 사진, 할일)
+    
+);
+
+ALTER TABLE BOARDCATE
+    ADD CONSTRAINT PK_BCA_NO
+        PRIMARY KEY(
+            BCA_NO
+        ); 
+
+CREATE SEQUENCE PIC_SQC;
+
+<병준테이블>
+CREATE TABLE MEMBERS (
+    ID VARCHAR2(20) NOT NULL, -- 아이디 
+    PWD VARCHAR2(30) NOT NULL, -- 비밀번호 
+    NAME VARCHAR2(30) NOT NULL, -- 이름 
+    BIRTH_DATE VARCHAR2(30) NOT NULL, --생년월일 
+    JOIN_DATE VARCHAR2(30) DEFAULT SYSDATE, -- 가입날짜 
+    NICKNAME VARCHAR2(20) UNIQUE, -- 닉네임   
+    EMAIL VARCHAR2(50) NOT NULL, -- 이메일 
+    PHONE VARCHAR2(30) NOT NULL, -- 핸드폰번호 
+    GENDER NUMBER(1) DEFAULT 1, -- 성별 
+    AUTH NUMBER(1) DEFAULT 1 -- 1: 유저 2: 관리자
+    
+);
+
+
+
+<민수테이블>
+CREATE TABLE MYWORK (
+   ID VARCHAR2(20) NOT NULL -- (세션)아이디
+   WORK_START VARCHAR2(400) NOT NULL -- 할일
+   WORK_END NUMBER NOT NULL -- 1:진행중 2:완료
+   PLANDATE VARCHAR2 NOT NULL -- 할일 등록 날짜
+
+
+
+--------------------------------------------------------------------------------------------------------------------------------
+
+유열씨 랑 통합하기위해 커넥션풀 사용 
+Servers -> Context.xml -> <Context> 안에 
+
+<Resource 
+      auth="Container" 
+      driverClassName="oracle.jdbc.driver.OracleDriver"
+      url="jdbc:oracle:thin:@localhost:1521:xe" 
+        username="planner "
+        password="20200824"
+        name="jdbc/Onedays"
+        type="javax.sql.DataSource"
+        maxActive="50"
+        maxWait="1000"
+   />
+
+유열씨 사진을 받기위한 폴더생성
+워크스페이스 metadata 안에 upload 폴더 생성 (사진저장용)
+metadata -> org.eclipse.wst.server.core -> 프로젝트찾아서 upload폴더생성
+
+유열씨 테이블 연결 db생성
+BOARDCATE 테이블에  BCA_NO 1 , BCA_CATEGORY 1 데이터생성
+
+
+--------------------------------------------------------------------------------------------------------------------------------
+
+현재 통합완료 
+PPT준비
+각자 서브페이지 소개 어떻게할지 준비
+자료흐름도 준비 우린 index 페이지가없어서 main controller부터 시작
+강사님이 보내준 1조 PPT 자료 참고
+시동/반응순서
+테이블 구조
